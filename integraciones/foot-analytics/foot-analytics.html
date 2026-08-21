@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foot Analytics — Integración InBiot</title>
+<style>
+  :root {
+    --text-dark: #16181d;
+    --text-muted: #6b7280;
+    --text-label: #8b8f97;
+    --text-pending: #b45309;
+    --border-light: #e5e7eb;
+    --placeholder-bg: #d9d9de;
+    --btn-bg: #1f2126;
+    --btn-text: #ffffff;
+    --spec-bg-from: #fbfbfc;
+    --spec-bg-to: #f1f1f3;
+    --pending-bg: #fff8ec;
+    --pending-border: #f2dfb8;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-dark);
+    background: #ffffff;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 24px 96px 24px;
+  }
+
+  /* ============ BREADCRUMB ============ */
+  .breadcrumb {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+  .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb .sep { margin: 0 6px; }
+  .breadcrumb .current { color: var(--text-dark); font-weight: 600; }
+
+  /* ============ LAYOUT 2 COLUMNAS (hero izq. / specs der.) ============ */
+  .page-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: start;
+    margin-bottom: 56px;
+  }
+
+  @media (max-width: 780px) {
+    .page-layout { grid-template-columns: 1fr; gap: 32px; }
+  }
+
+  /* ============ COLUMNA IZQUIERDA: título, texto, imagen, CTA ============ */
+  .ficha-hero h1 {
+    font-size: 32px;
+    line-height: 1.15;
+    font-weight: 800;
+    margin: 0 0 16px 0;
+  }
+
+  .ficha-hero .description {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0 0 24px 0;
+  }
+
+  .hero-image {
+    width: 100%;
+    aspect-ratio: 1 / 0.72;
+    background: #ffffff;
+    border: 2px solid var(--border-light);
+    border-radius: 12px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+  }
+
+  .hero-image-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .hero-image .placeholder-note {
+    font-size: 13px;
+    color: #8a8d93;
+    text-align: center;
+    padding: 0 16px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .btn-primary:hover { background: #34363c; }
+
+  /* ============ COLUMNA DERECHA: specs apiladas ============ */
+  .spec-list {
+    background: linear-gradient(160deg, var(--spec-bg-from), var(--spec-bg-to));
+    border-radius: 20px;
+    padding: 8px 28px;
+    height: 100%;
+  }
+
+  .spec-row {
+    padding: 22px 0;
+  }
+
+  .spec-row + .spec-row {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .spec-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-label);
+    margin-bottom: 8px;
+  }
+
+  .spec-value {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-dark);
+  }
+
+  .spec-value p { margin: 0 0 6px 0; }
+  .spec-value p:last-child { margin-bottom: 0; }
+
+  .spec-value .value-name {
+    font-weight: 700;
+    margin: 0 0 4px 0;
+  }
+
+  .spec-value .value-name.is-pending {
+    color: var(--text-pending);
+    font-weight: 600;
+  }
+
+  .spec-value .value-sub {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .spec-value .value-sub.is-pending {
+    color: var(--text-pending);
+    font-style: italic;
+  }
+
+  .spec-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-dark);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .spec-link:hover { text-decoration: underline; }
+  .spec-link svg { flex: 0 0 auto; }
+
+  /* ============ RECURSOS RELACIONADOS ============ */
+  .ficha-resources h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 18px 0;
+  }
+
+  .resources-empty {
+    border: 1px dashed var(--pending-border);
+    background: var(--pending-bg);
+    border-radius: 12px;
+    padding: 20px;
+    font-size: 14px;
+    color: var(--text-pending);
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="../../PAGINA GENERAL INTEGRACIONES.html">Todas las integraciones</a>
+      <span class="sep">&gt;</span>
+      <span class="current">Foot Analytics</span>
+    </div>
+
+    <div class="page-layout">
+
+      <!-- Izquierda: título, texto, imagen, CTA -->
+      <div class="ficha-hero">
+        <h1>Foot Analytics</h1>
+        <p class="description">Foot Analytics es una plataforma de analítica de comportamiento y ocupación de espacios. Cruzar la afluencia con los datos de calidad del aire del MICA ayuda a optimizar la gestión de espacios y el bienestar de los visitantes.</p>
+        <div class="hero-image">
+          <img src="logo.png" alt="Foot Analytics" class="hero-image-img"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <span class="placeholder-note" style="display:none;">Logo pendiente — colocar como logo.png en esta carpeta</span>
+        </div>
+        <a href="#" class="btn-primary">Cómo integrarlo</a>
+      </div>
+
+      <!-- Derecha: specs apiladas -->
+      <div class="spec-list">
+
+        <div class="spec-row">
+          <div class="spec-label">Conectividad</div>
+          <div class="spec-value">API</div>
+        </div>
+
+        <div class="spec-row">
+          <div class="spec-label">Integración</div>
+          <div class="spec-value">
+            <p>Foot Analytics solicita periódicamente los datos del MICA mediante API REST y los cruza con el resto de señales que ya gestiona (ocupación, limpieza, clima y hospitality) para componer una interfaz única de facility management. Esa vía se eligió por ser la más rápida y sencilla de desplegar, aunque el proyecto puede optar por protocolos locales como Modbus o BACnet cuando las necesidades de la instalación lo requieran.</p>
+          </div>
+        </div>
+
+        <div class="spec-row">
+          <div class="spec-label">Empresa</div>
+          <div class="spec-value">
+            <p class="value-name">Foot Analytics</p>
+            <p class="value-sub">Foot Analytics (Foot Analytics, S.L.) es una empresa española (Barcelona), fundada en 2013, que ofrece una plataforma de inteligencia espacial (producto iKnos Corporate) para medir en tiempo real tráfico, aforo, duración, recurrencia y rutas en espacios físicos, usando la red WiFi ya desplegada, cumpliendo con GDPR.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Local System Integrations</title>
+<style>
+  :root{
+    --ink:#1b2340;
+    --sub:#6b7280;
+    --line:#e6e8ee;
+    --card:#f4f5f8;
+    --accent:#3452ff;
+    --green:#0a7a54;
+    --bg:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+  }
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:64px 24px 96px;
+  }
+
+  /* Header */
+  .eyebrow{
+    text-align:center;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:.04em;
+    color:var(--sub);
+    margin-bottom:8px;
+  }
+  h1{
+    text-align:center;
+    font-size:36px;
+    margin:0 0 12px;
+  }
+  .subtitle{
+    text-align:center;
+    color:var(--sub);
+    font-size:15px;
+    max-width:640px;
+    margin:0 auto;
+    line-height:1.5;
+  }
+
+  /* Integration flow diagram (hero) */
+  .integration-flow{width:100%;max-width:1080px;margin:20px auto 36px;}
+  /* Carousel */
+  .carousel{position:relative;border:1px solid var(--line);border-radius:20px;background:var(--bg);
+    box-shadow:0 12px 32px rgba(27,35,64,.06);overflow:hidden;}
+  .carousel-track{display:flex;transition:transform .6s cubic-bezier(.4,0,.2,1);}
+  .slide{flex:0 0 100%;min-width:100%;padding:24px 30px 46px;min-height:290px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;}
+  .slide-title{font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--sub);
+    margin:0;text-transform:uppercase;text-align:center;}
+  .slide-placeholder{display:flex;align-items:center;justify-content:center;width:100%;min-height:200px;
+    color:var(--sub);font-size:14px;border:1px dashed var(--line);border-radius:14px;}
+
+  /* Pipeline (left to right) */
+  .pipeline{display:flex;align-items:center;justify-content:center;width:100%;}
+  .fork{display:flex;align-items:center;flex:0 0 auto;position:relative;}
+  .fork-svg{width:88px;height:170px;flex:0 0 auto;}
+  .outs{display:flex;flex-direction:column;justify-content:space-between;height:170px;padding:4px 0;}
+  .out{display:flex;align-items:center;gap:10px;}
+  .out-box{width:46px;height:46px;border-radius:12px;border:1px solid var(--line);background:var(--bg);
+    display:flex;align-items:center;justify-content:center;color:var(--green);
+    box-shadow:0 6px 18px rgba(27,35,64,.05);flex:0 0 auto;}
+  .out-box svg{width:24px;height:24px;}
+  .out-name{font-size:12.5px;font-weight:600;max-width:132px;line-height:1.25;}
+  /* Protocol tag on a leg */
+  .proto{position:absolute;left:50%;top:38px;transform:translateX(-50%);white-space:nowrap;
+    font-size:11.5px;font-weight:700;color:var(--accent);background:rgba(52,82,255,.10);
+    border:1px solid rgba(52,82,255,.25);padding:3px 10px;border-radius:7px;letter-spacing:.02em;}
+  /* 3-way fork */
+  .fork-svg3{width:96px;height:200px;flex:0 0 auto;}
+  .outs3{display:flex;flex-direction:column;justify-content:space-between;height:200px;padding:4px 0;}
+  .office{position:relative;border:1px solid var(--line);border-radius:14px;background:var(--bg);
+    box-shadow:0 8px 24px rgba(27,35,64,.05);padding:0 16px;}
+  .office-tag{position:absolute;top:-11px;left:16px;display:inline-flex;align-items:center;gap:5px;
+    font-size:10.5px;font-weight:600;color:var(--sub);background:var(--bg);border:1px solid var(--line);
+    border-radius:20px;padding:2px 9px 2px 7px;}
+  .office-tag svg{width:12px;height:12px;color:var(--sub);}
+  .out-box.heat{color:#c26a1e;background:rgba(210,120,40,.10);border-color:rgba(210,120,40,.25);}
+  .out-box.vent{color:var(--green);background:rgba(10,122,84,.10);border-color:rgba(10,122,84,.25);}
+  .out-box.ac{color:#2b7fc2;background:rgba(43,130,200,.10);border-color:rgba(43,130,200,.25);}
+  .out-box.heat svg{transform-origin:center;animation:flicker 1.5s ease-in-out infinite;}
+  .out-box.vent svg{transform-origin:center;animation:spin 2.6s linear infinite;}
+  .out-box.ac svg{transform-origin:center;animation:acdrift 3.4s ease-in-out infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes flicker{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.7;transform:scale(1.12);}}
+  @keyframes acdrift{0%,100%{transform:rotate(0deg);}50%{transform:rotate(40deg);}}
+  .carousel-dots{position:absolute;left:0;right:0;bottom:14px;display:flex;justify-content:center;gap:8px;}
+  .cdot{width:8px;height:8px;border-radius:50%;border:none;background:var(--line);padding:0;cursor:pointer;
+    transition:width .25s,background .25s;}
+  .cdot.active{background:var(--accent);width:22px;border-radius:20px;}
+  .head{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:0 0 6px;}
+  .flow-cap{font-size:14px;font-weight:600;letter-spacing:.04em;color:var(--sub);margin:0;text-transform:uppercase;}
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--green);
+    background:rgba(10,122,84,.10);padding:3px 9px;border-radius:20px;}
+  .live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.2s ease-in-out infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+  .legend{display:flex;gap:18px;justify-content:center;margin:0 0 22px;font-size:11px;color:var(--sub);}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend i{width:14px;height:3px;border-radius:2px;display:inline-block;}
+  .legend .d{background:var(--accent);}.legend .a{background:var(--green);}
+
+  .stage{width:100%;max-width:920px;margin:0 auto;}
+
+  .systems{display:grid;grid-template-columns:repeat(2,1fr);}
+  .sys{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 6px;}
+  .sys-box{width:52px;height:52px;border-radius:14px;background:var(--bg);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;color:var(--green);box-shadow:0 6px 18px rgba(27,35,64,.05);}
+  .sys-box svg{width:26px;height:26px;}
+  .sys-name{font-size:12px;font-weight:600;margin-top:8px;max-width:150px;}
+
+  .risers{position:relative;height:24px;}
+  .riser{position:absolute;top:0;bottom:0;width:2px;background:var(--line);transform:translateX(-50%);}
+  .riser.a1{left:25%;}.riser.a2{left:75%;}
+  .rdot{position:absolute;left:-4px;width:9px;height:9px;border-radius:50%;background:var(--green);
+    box-shadow:0 0 0 4px rgba(10,122,84,.15);animation:riseUp 1.9s linear infinite;}
+  .rdot:nth-child(2){animation-delay:.95s;}
+  @keyframes riseUp{0%{top:100%;opacity:0;}14%{opacity:1;}86%{opacity:1;}100%{top:-4px;opacity:0;}}
+
+  .platform{border:1px solid var(--line);border-radius:14px;padding:12px 16px;
+    box-shadow:0 12px 32px rgba(27,35,64,.08);position:relative;}
+  .plat-top{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+  .plat-logo{width:40px;height:40px;border-radius:11px;border:1px solid var(--line);background:var(--bg);
+    display:flex;align-items:center;justify-content:center;}
+  .plat-logo img{width:24px;height:24px;object-fit:contain;}
+  .plat-name{font-size:16px;font-weight:600;line-height:1.15;}
+  .plat-sub{font-size:12px;color:var(--sub);}
+  .plat-badge{margin-left:auto;font-size:11px;font-weight:600;color:var(--accent);
+    background:rgba(52,82,255,.10);padding:3px 10px;border-radius:20px;}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .kpi{background:var(--card);border-radius:10px;padding:9px 11px;}
+  .kpi .k{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:.03em;}
+  .kpi .v{font-size:16px;font-weight:600;margin-top:2px;}
+  .kpi .v small{font-size:11px;color:var(--sub);font-weight:400;}
+
+  .chain{display:flex;align-items:center;justify-content:center;margin-top:28px;}
+  .node{position:relative;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;text-align:center;width:112px;}
+  .node .up{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);width:2px;height:28px;background:var(--line);}
+  .node .up .rdot{background:var(--accent);box-shadow:0 0 0 4px rgba(52,82,255,.15);}
+  .node .up .rdot:nth-child(2){animation-delay:.95s;}
+  .node-box{position:relative;width:66px;height:66px;border-radius:16px;background:var(--bg);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(27,35,64,.05);}
+  .node-box img{width:34px;height:34px;object-fit:contain;}
+  .node-box svg{width:34px;height:34px;color:var(--accent);}
+  .node-box.act svg{color:var(--green);}
+  .pulse.g::before,.pulse.g::after{border-color:var(--green);}
+  .leg.act .packet{background:var(--green);box-shadow:0 0 0 4px rgba(10,122,84,.15);}
+  .leg.act .val{color:var(--green);border-color:rgba(10,122,84,.30);}
+  .node-name{font-size:13px;font-weight:600;margin-top:9px;}
+  .node-sub{font-size:11px;color:var(--sub);margin-top:1px;}
+  .pulse::before,.pulse::after{content:"";position:absolute;inset:0;border-radius:16px;border:2px solid var(--accent);
+    opacity:0;animation:pulse 2.4s ease-out infinite;}
+  .pulse::after{animation-delay:1.2s;}
+  @keyframes pulse{0%{transform:scale(1);opacity:.5;}100%{transform:scale(1.3);opacity:0;}}
+
+  .leg{position:relative;flex:1 1 auto;min-width:120px;height:58px;}
+  .leg .line{position:absolute;left:0;right:0;top:29px;height:3px;margin-top:-1.5px;background:var(--line);border-radius:2px;}
+  .packet{position:absolute;top:29px;margin-top:-5px;left:0;width:10px;height:10px;border-radius:50%;
+    background:var(--accent);box-shadow:0 0 0 4px rgba(52,82,255,.15);animation:travelX 6.3s linear infinite;}
+  .packet:nth-of-type(2){animation-delay:2.1s;}.packet:nth-of-type(3){animation-delay:4.2s;}
+  @keyframes travelX{0%{left:0;opacity:0;transform:translateX(-50%) scale(.6);}12%{opacity:.6;transform:translateX(-50%) scale(1);}
+    88%{opacity:1;transform:translateX(-50%) scale(1);}100%{left:100%;opacity:0;transform:translateX(-50%) scale(.6);}}
+  .val{position:absolute;top:2px;left:0;transform:translateX(-50%);white-space:nowrap;font-size:11.5px;font-weight:600;
+    color:var(--accent);background:var(--bg);border:1px solid rgba(52,82,255,.25);padding:3px 9px;border-radius:8px;
+    animation:rideX 6.3s linear infinite;opacity:0;}
+  .val b{color:var(--ink);font-weight:600;}
+  .val.ind{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .val.ind b{color:#fff;}
+  .val:nth-of-type(4){animation-delay:0s;}.val:nth-of-type(5){animation-delay:3.15s;}
+  .leg.tri .val:nth-of-type(4){animation-delay:0s;}.leg.tri .val:nth-of-type(5){animation-delay:2.1s;}.leg.tri .val:nth-of-type(6){animation-delay:4.2s;}
+  /* Continuous track: data traverses the whole line through the middle node */
+  .track{position:relative;flex:1 1 auto;min-width:300px;height:58px;}
+  .track .line{position:absolute;left:0;right:0;top:29px;height:3px;margin-top:-1.5px;background:var(--line);border-radius:2px;}
+  .track .midnode{position:absolute;left:50%;top:-16px;transform:translateX(-50%);z-index:3;}
+  .track .packet{animation-name:travelThrough;animation-duration:7.8s;}
+  .track .val{animation-name:rideThrough;animation-duration:7.8s;z-index:1;}
+  @keyframes rideThrough{0%{left:0;opacity:0;}9%{opacity:.6;}40%{opacity:.6;}46%{opacity:0;}54%{opacity:0;}60%{opacity:.6;}91%{opacity:.6;}100%{left:100%;opacity:0;}}
+  @keyframes travelThrough{0%{left:0;opacity:0;transform:translateX(-50%) scale(.6);}9%{opacity:.6;transform:translateX(-50%) scale(1);}40%{opacity:.6;}46%{opacity:0;}54%{opacity:0;}60%{opacity:.6;}91%{opacity:.6;transform:translateX(-50%) scale(1);}100%{left:100%;opacity:0;transform:translateX(-50%) scale(.6);}}
+  @keyframes rideX{0%{left:0;opacity:0;}12%{opacity:.6;}88%{opacity:.6;}100%{left:100%;opacity:0;}}
+
+  /* Catalog layout: sidebar + content */
+  .catalog{
+    display:grid;
+    grid-template-columns:280px 1fr;
+    gap:40px;
+    align-items:start;
+  }
+
+  /* Sidebar / filter menu */
+  .sidebar{
+    position:sticky;
+    top:24px;
+  }
+  .sidebar-title{
+    font-size:15px;
+    font-weight:600;
+    margin:0 0 12px;
+  }
+  .search{
+    position:relative;
+    margin-bottom:24px;
+  }
+  .search svg{
+    position:absolute;
+    left:14px;
+    top:50%;
+    transform:translateY(-50%);
+    width:16px;
+    height:16px;
+    color:var(--sub);
+    pointer-events:none;
+  }
+  .search input{
+    width:100%;
+    padding:11px 14px 11px 40px;
+    font-size:14px;
+    color:var(--ink);
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--bg);
+    outline:none;
+  }
+  .search input:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(52,82,255,.12);
+  }
+  .sidebar-label{
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--sub);
+    margin:0 0 14px;
+  }
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .chip{
+    font-size:13px;
+    color:var(--ink);
+    background:var(--card);
+    border:1px solid transparent;
+    border-radius:9px;
+    padding:7px 13px;
+    cursor:pointer;
+    transition:background .12s,color .12s,border-color .12s;
+  }
+  .chip:hover{border-color:var(--line);}
+  .chip.active{
+    background:var(--accent);
+    color:#fff;
+  }
+
+  /* Cards grid */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+  }
+  .card{
+    position:relative;
+    display:block;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:20px;
+    text-decoration:none;
+    color:inherit;
+    transition:border-color .12s,box-shadow .12s,transform .12s;
+  }
+  .tag{
+    position:absolute;
+    top:16px;
+    right:16px;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.03em;
+    padding:5px 11px;
+    border-radius:7px;
+  }
+  .tags{
+    position:absolute;
+    top:16px;
+    right:16px;
+    display:flex;
+    gap:6px;
+  }
+  .tags .tag{
+    position:static;
+    top:auto;
+    right:auto;
+  }
+  .tag.bms{
+    color:var(--accent);
+    background:rgba(52,82,255,.10);
+  }
+  .tag.saas{
+    color:#0a7a54;
+    background:rgba(10,122,84,.10);
+  }
+  .card:hover{
+    border-color:var(--accent);
+    box-shadow:0 6px 18px rgba(27,35,64,.08);
+    transform:translateY(-2px);
+  }
+  .icon{
+    width:36px;
+    height:36px;
+    border-radius:9px;
+    background:var(--card);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:16px;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .icon img{
+    width:24px;
+    height:24px;
+    object-fit:contain;
+  }
+  .card h3{
+    font-size:15px;
+    margin:0 0 6px;
+  }
+  .card p{
+    font-size:13px;
+    color:var(--sub);
+    line-height:1.5;
+    margin:0;
+  }
+  .no-results{
+    grid-column:1 / -1;
+    color:var(--sub);
+    font-size:14px;
+    padding:24px 0;
+  }
+
+  @media (max-width:900px){
+    .catalog{grid-template-columns:1fr;}
+    .sidebar{position:static;}
+  }
+  @media (max-width:720px){
+    .grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">INTEGRACIONES</div>
+  <h1>La solución más completa para monitorización y control.</h1>
+  <p class="subtitle">Integra los datos de calidad del aire del interior con un BMS, un software que ya utilizas u otros elementos IoT para tu Smart Building</p>
+
+  <div class="integration-flow">
+   <div class="carousel">
+    <div class="carousel-track" id="ctrack">
+     <div class="slide">
+    <div class="slide-title">LoRaWAN to IoT Platform</div>
+    <div class="pipeline">
+      <div class="node">
+        <div class="node-box pulse"><img src="https://www.google.com/s2/favicons?domain=inbiot.es&sz=128" alt="inBiot MICA"></div>
+        <div class="node-name">MICA</div>
+        <div class="node-sub">Monitor IAQ</div>
+      </div>
+      <div class="track">
+        <div class="line"></div>
+        <span class="packet" style="animation-delay:0s"></span><span class="packet" style="animation-delay:1.95s"></span><span class="packet" style="animation-delay:3.9s"></span><span class="packet" style="animation-delay:5.85s"></span>
+        <span class="val" style="animation-delay:0s">CO₂ <b>612 ppm</b></span><span class="val ind" style="animation-delay:1.95s">Índice IAQ <b>87</b></span><span class="val" style="animation-delay:3.9s">Temp <b>23.4 °C</b></span><span class="val ind" style="animation-delay:5.85s">Confort <b>92</b></span>
+        <div class="node midnode">
+          <div class="node-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="8" rx="2"/><path d="M17 17v.01"/><path d="M13 17v.01"/><path d="M15 13a4 4 0 0 0 -4 -4"/><path d="M11 5a8 8 0 0 1 8 8"/></svg></div>
+          <div class="node-name">Router LoRa</div>
+          <div class="node-sub">Gateway LoRaWAN</div>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-box pulse"><img src="miniaturas homePage/akenza.svg" alt="Akenza"></div>
+        <div class="node-name">Akenza</div>
+        <div class="node-sub">Plataforma cloud</div>
+      </div>
+      <div class="fork">
+        <svg class="fork-svg" viewBox="0 0 88 170" fill="none">
+          <path id="fpU" d="M0 85 C 46 85, 50 26, 88 26" stroke="var(--green)" stroke-width="2" stroke-linecap="round" opacity=".4"/>
+          <path id="fpD" d="M0 85 C 46 85, 50 144, 88 144" stroke="var(--green)" stroke-width="2" stroke-linecap="round" opacity=".4"/>
+          <circle r="4.5" fill="var(--green)"><animateMotion dur="2.85s" repeatCount="indefinite"><mpath href="#fpU"/></animateMotion></circle>
+          <circle r="4.5" fill="var(--green)"><animateMotion dur="2.85s" begin="1.425s" repeatCount="indefinite"><mpath href="#fpU"/></animateMotion></circle>
+          <circle r="4.5" fill="var(--green)"><animateMotion dur="2.85s" begin="0.75s" repeatCount="indefinite"><mpath href="#fpD"/></animateMotion></circle>
+          <circle r="4.5" fill="var(--green)"><animateMotion dur="2.85s" begin="2.175s" repeatCount="indefinite"><mpath href="#fpD"/></animateMotion></circle>
+        </svg>
+        <div class="outs">
+          <div class="out">
+            <div class="out-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></div>
+            <div class="out-name">Facility Manager</div>
+          </div>
+          <div class="out">
+            <div class="out-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="9" height="12" rx="1"/><rect x="13" y="12" width="7" height="9" rx="1"/><line x1="6.5" y1="12.5" x2="7.5" y2="12.5"/><line x1="9.5" y1="12.5" x2="10.5" y2="12.5"/><line x1="6.5" y1="15.5" x2="7.5" y2="15.5"/><line x1="9.5" y1="15.5" x2="10.5" y2="15.5"/><path d="M6 5.4a5 5 0 0 1 8 0"/><path d="M8 7a2.4 2.4 0 0 1 4 0"/></svg></div>
+            <div class="out-name">Automatización Smart Building</div>
+          </div>
+        </div>
+      </div>
+    </div>
+     </div><!-- /slide 1 -->
+
+     <div class="slide">
+      <div class="slide-title">Local Communication for BMS and HVAC Control</div>
+      <div class="pipeline">
+        <div class="node">
+          <div class="node-box pulse"><img src="https://www.google.com/s2/favicons?domain=inbiot.es&sz=128" alt="inBiot MICA"></div>
+          <div class="node-name">MICA</div>
+          <div class="node-sub">Monitor IAQ</div>
+        </div>
+        <div class="leg">
+          <div class="line"></div>
+          <span class="packet" style="animation-delay:0s"></span><span class="packet" style="animation-delay:1.575s"></span><span class="packet" style="animation-delay:3.15s"></span><span class="packet" style="animation-delay:4.725s"></span>
+          <span class="val" style="animation-delay:0s">Temp <b>23.4 °C</b></span><span class="val ind" style="animation-delay:1.575s">Ventilación <b>78</b></span><span class="val" style="animation-delay:3.15s">PM2.5 <b>8 µg/m³</b></span><span class="val ind" style="animation-delay:4.725s">Confort <b>92</b></span>
+          <span class="proto">Modbus · BACnet</span>
+        </div>
+        <div class="node">
+          <div class="node-box pulse"><img src="miniaturas homePage/honeywell-trend-control-systems.png" alt="Honeywell"></div>
+          <div class="node-name">BMS Honeywell</div>
+          <div class="node-sub">Sistema de gestión</div>
+        </div>
+        <div class="fork">
+          <svg class="fork-svg3" viewBox="0 0 96 200" fill="none">
+            <path id="fpU2" d="M0 100 C 50 100, 54 24, 96 24" stroke="var(--green)" stroke-width="2" stroke-linecap="round" opacity=".4"/>
+            <path id="fpM2" d="M0 100 L 96 100" stroke="var(--green)" stroke-width="2" stroke-linecap="round" opacity=".4"/>
+            <path id="fpD2" d="M0 100 C 50 100, 54 176, 96 176" stroke="var(--green)" stroke-width="2" stroke-linecap="round" opacity=".4"/>
+            <circle r="4.5" fill="var(--green)"><animateMotion dur="2.85s" repeatCount="indefinite"><mpath href="#fpU2"/></animateMotion></circle>
+            <circle r="4.5" fill="var(--green)"><animateMotion dur="2.85s" begin="1.425s" repeatCount="indefinite"><mpath href="#fpU2"/></animateMotion></circle>
+            <circle r="4.5" fill="var(--green)"><animateMotion dur="2.85s" begin="0.45s" repeatCount="indefinite"><mpath href="#fpM2"/></animateMotion></circle>
+            <circle r="4.5" fill="var(--green)"><animateMotion dur="2.85s" begin="1.875s" repeatCount="indefinite"><mpath href="#fpM2"/></animateMotion></circle>
+            <circle r="4.5" fill="var(--green)"><animateMotion dur="2.85s" begin="0.9s" repeatCount="indefinite"><mpath href="#fpD2"/></animateMotion></circle>
+            <circle r="4.5" fill="var(--green)"><animateMotion dur="2.85s" begin="2.325s" repeatCount="indefinite"><mpath href="#fpD2"/></animateMotion></circle>
+          </svg>
+          <div class="outs3">
+            <div class="out">
+              <div class="out-box heat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c2 -2.96 0 -7 -1 -8c0 3.038 -1.773 4.741 -3 6c-1.226 1.26 -2 3.24 -2 5a6 6 0 1 0 12 0c0 -1.532 -1.056 -3.94 -2 -5c-1.786 3 -2.791 3 -4 2z"/></svg></div>
+              <div class="out-name">Heating</div>
+            </div>
+            <div class="out">
+              <div class="out-box vent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.827 16.379a6.082 6.082 0 0 1 -8.618 -7.002l5.412 1.45a6.082 6.082 0 0 1 7.002 -8.618l-1.45 5.412a6.082 6.082 0 0 1 8.618 7.002l-5.412 -1.45a6.082 6.082 0 0 1 -7.002 8.618l1.45 -5.412z"/><path d="M12 12v.01"/></svg></div>
+              <div class="out-name">Ventilation</div>
+            </div>
+            <div class="out">
+              <div class="out-box ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/><path d="M20 16l-4 -4l4 -4"/><path d="M4 8l4 4l-4 4"/><path d="M16 4l-4 4l-4 -4"/><path d="M8 20l4 -4l4 4"/></svg></div>
+              <div class="out-name">Air Conditioning</div>
+            </div>
+          </div>
+        </div>
+      </div>
+     </div>
+     <div class="slide">
+      <div class="slide-title">API Integration in FM Platform</div>
+      <div class="pipeline">
+        <div class="node">
+          <div class="node-box pulse"><img src="https://www.google.com/s2/favicons?domain=inbiot.es&sz=128" alt="inBiot MICA"></div>
+          <div class="node-name">MICA</div>
+          <div class="node-sub">Monitor IAQ</div>
+        </div>
+        <div class="track">
+          <div class="line"></div>
+          <span class="packet" style="animation-delay:0s"></span><span class="packet" style="animation-delay:1.95s"></span><span class="packet" style="animation-delay:3.9s"></span><span class="packet" style="animation-delay:5.85s"></span>
+          <span class="val" style="animation-delay:0s">CO₂ <b>612 ppm</b></span><span class="val ind" style="animation-delay:1.95s">Anti-propagación virus <b>85</b></span><span class="val" style="animation-delay:3.9s">HR <b>48 %</b></span><span class="val ind" style="animation-delay:5.85s">Índice IAQ <b>87</b></span>
+          <span class="proto" style="left:73%">API REST</span>
+          <div class="node midnode">
+            <div class="node-box pulse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4 4 0 0 1 0 -8 5 5 0 0 1 9.6 -1.4A3.5 3.5 0 0 1 18.5 18H7z"/></svg></div>
+            <div class="node-name">inBiot Cloud</div>
+            <div class="node-sub">Plataforma inBiot</div>
+          </div>
+        </div>
+        <div class="node">
+          <div class="node-box pulse"><img src="miniaturas homePage/infraspeak.png" alt="Infraspeak"></div>
+          <div class="node-name">Infraspeak</div>
+          <div class="node-sub">Plataforma Facility Management</div>
+        </div>
+        <div class="fork">
+          <svg class="fork-svg" viewBox="0 0 88 170" fill="none">
+            <path id="fpU3" d="M0 85 C 46 85, 50 26, 88 26" stroke="var(--green)" stroke-width="2" stroke-linecap="round" opacity=".4"/>
+            <path id="fpD3" d="M0 85 C 46 85, 50 144, 88 144" stroke="var(--green)" stroke-width="2" stroke-linecap="round" opacity=".4"/>
+            <circle r="4.5" fill="var(--green)"><animateMotion dur="2.85s" repeatCount="indefinite"><mpath href="#fpU3"/></animateMotion></circle>
+            <circle r="4.5" fill="var(--green)"><animateMotion dur="2.85s" begin="1.425s" repeatCount="indefinite"><mpath href="#fpU3"/></animateMotion></circle>
+            <circle r="4.5" fill="var(--green)"><animateMotion dur="2.85s" begin="0.75s" repeatCount="indefinite"><mpath href="#fpD3"/></animateMotion></circle>
+            <circle r="4.5" fill="var(--green)"><animateMotion dur="2.85s" begin="2.175s" repeatCount="indefinite"><mpath href="#fpD3"/></animateMotion></circle>
+          </svg>
+          <div class="outs">
+            <div class="out">
+              <div class="out-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></div>
+              <div class="out-name">Facility Manager</div>
+            </div>
+            <div class="out">
+              <div class="out-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><circle cx="5" cy="6" r="1.8"/><circle cx="19" cy="6" r="1.8"/><circle cx="5" cy="18" r="1.8"/><circle cx="19" cy="18" r="1.8"/><path d="M10.3 10.6 6.4 7.3"/><path d="M13.7 10.6 17.6 7.3"/><path d="M10.3 13.4 6.4 16.7"/><path d="M13.7 13.4 17.6 16.7"/></svg></div>
+              <div class="out-name">Building Ecosystem</div>
+            </div>
+          </div>
+        </div>
+      </div>
+     </div>
+
+     <div class="slide">
+      <div class="slide-title">Data into KNX Ecosystem</div>
+      <div class="pipeline">
+        <div class="node">
+          <div class="node-box pulse"><img src="https://www.google.com/s2/favicons?domain=inbiot.es&sz=128" alt="inBiot MICA"></div>
+          <div class="node-name">MICA</div>
+          <div class="node-sub">Monitor IAQ</div>
+        </div>
+        <div class="leg">
+          <div class="line"></div>
+          <span class="packet" style="animation-delay:0s"></span><span class="packet" style="animation-delay:2.1s"></span><span class="packet" style="animation-delay:4.2s"></span>
+          <span class="val" style="animation-delay:0s">Temp <b>23.4 °C</b></span><span class="val ind" style="animation-delay:2.1s">Ventilación <b>78</b></span><span class="val ind" style="animation-delay:4.2s">Confort <b>92</b></span>
+          <span class="proto">Modbus</span>
+        </div>
+        <div class="node">
+          <div class="node-box pulse"><img src="miniaturas homePage/schneider-electric-ecostruxure.png" alt="Schneider Electric"></div>
+          <div class="node-name">Schneider</div>
+          <div class="node-sub">Controlador lógico</div>
+        </div>
+        <div class="fork">
+          <span class="proto" style="left:4px;top:36%;transform:translateY(-50%)">KNX</span>
+          <svg class="fork-svg3" viewBox="0 0 96 200" fill="none">
+            <path d="M0 100 H96" stroke="var(--green)" stroke-width="2" stroke-linecap="round" opacity=".38"/>
+            <path d="M34 24 V176" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" opacity=".38"/>
+            <path d="M34 24 H96" stroke="var(--green)" stroke-width="2" stroke-linecap="round" opacity=".38"/>
+            <path d="M34 176 H96" stroke="var(--green)" stroke-width="2" stroke-linecap="round" opacity=".38"/>
+            <rect x="30.5" y="20.5" width="7" height="7" rx="1.6" fill="var(--green)" opacity=".5"/>
+            <rect x="30.5" y="96.5" width="7" height="7" rx="1.6" fill="var(--green)" opacity=".5"/>
+            <rect x="30.5" y="172.5" width="7" height="7" rx="1.6" fill="var(--green)" opacity=".5"/>
+            <path id="fpKH" d="M0 100 H34 V24 H96"/>
+            <path id="fpKV" d="M0 100 H96"/>
+            <path id="fpKD" d="M0 100 H34 V176 H96"/>
+            <rect x="-2.6" y="-2.6" width="5.2" height="5.2" rx="1.2" fill="var(--green)"><animateMotion dur="6.45s" repeatCount="indefinite"><mpath href="#fpKH"/></animateMotion></rect>
+            <rect x="-2.6" y="-2.6" width="5.2" height="5.2" rx="1.2" fill="var(--green)"><animateMotion dur="3.6s" begin="0.75s" repeatCount="indefinite"><mpath href="#fpKV"/></animateMotion></rect>
+            <rect x="-2.6" y="-2.6" width="5.2" height="5.2" rx="1.2" fill="var(--green)"><animateMotion dur="3.6s" begin="2.55s" repeatCount="indefinite"><mpath href="#fpKV"/></animateMotion></rect>
+            <rect x="-2.6" y="-2.6" width="5.2" height="5.2" rx="1.2" fill="var(--green)"><animateMotion dur="6.45s" begin="2.25s" repeatCount="indefinite"><mpath href="#fpKD"/></animateMotion></rect>
+          </svg>
+          <div class="office">
+            <span class="office-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="9" y1="7" x2="9" y2="7"/><line x1="15" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="9" y2="11"/><line x1="15" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="9" y2="15"/><line x1="15" y1="15" x2="15" y2="15"/></svg> Oficina</span>
+            <div class="outs3">
+            <div class="out">
+              <div class="out-box heat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c2 -2.96 0 -7 -1 -8c0 3.038 -1.773 4.741 -3 6c-1.226 1.26 -2 3.24 -2 5a6 6 0 1 0 12 0c0 -1.532 -1.056 -3.94 -2 -5c-1.786 3 -2.791 3 -4 2z"/></svg></div>
+              <div class="out-name">Heating</div>
+            </div>
+            <div class="out">
+              <div class="out-box vent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.827 16.379a6.082 6.082 0 0 1 -8.618 -7.002l5.412 1.45a6.082 6.082 0 0 1 7.002 -8.618l-1.45 5.412a6.082 6.082 0 0 1 8.618 7.002l-5.412 -1.45a6.082 6.082 0 0 1 -7.002 8.618l1.45 -5.412z"/><path d="M12 12v.01"/></svg></div>
+              <div class="out-name">Ventilation</div>
+            </div>
+            <div class="out">
+              <div class="out-box ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/><path d="M20 16l-4 -4l4 -4"/><path d="M4 8l4 4l-4 4"/><path d="M16 4l-4 4l-4 -4"/><path d="M8 20l4 -4l4 4"/></svg></div>
+              <div class="out-name">Air Conditioning</div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+     </div>
+    </div><!-- /carousel-track -->
+
+    <div class="carousel-dots">
+      <button class="cdot active" aria-label="Esquema 1"></button>
+      <button class="cdot" aria-label="Esquema 2"></button>
+      <button class="cdot" aria-label="Esquema 3"></button>
+      <button class="cdot" aria-label="Esquema 4"></button>
+    </div>
+   </div><!-- /carousel -->
+  </div>
+
+  <div class="catalog">
+
+    <!-- Filter menu -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Buscar integraciones</div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="searchInput" placeholder="Buscar…" autocomplete="off">
+      </div>
+
+      <p class="sidebar-label">Categorías</p>
+      <div class="chips" id="chips">
+        <button class="chip active" data-cat="all">Todas</button>
+        <button class="chip" data-cat="BMS">BMS</button>
+        <button class="chip" data-cat="SAAS">SAAS</button>
+        <button class="chip" data-cat="Control HVAC / BMS">Control HVAC / BMS</button>
+        <button class="chip" data-cat="Gestión energética">Gestión energética</button>
+        <button class="chip" data-cat="Facility Management">Facility Management</button>
+        <button class="chip" data-cat="Analítica de espacios">Analítica de espacios</button>
+        <button class="chip" data-cat="Bienestar y certificación">Bienestar y certificación</button>
+        <button class="chip" data-cat="Conectividad IoT">Conectividad IoT</button>
+      </div>
+    </aside>
+
+    <!-- Content -->
+    <div class="catalog-main">
+      <div class="grid" id="grid">
+        <a class="card" href="integraciones/honeywell-trend-control-systems/honeywell-trend-control-systems.html" data-name="Honeywell Trend Control Systems" data-cats="BMS,Control HVAC / BMS">
+          <span class="tag bms">BMS</span>
+          <div class="icon"><img src="miniaturas homePage/honeywell-trend-control-systems.png" alt="Honeywell Trend Control Systems" loading="lazy"></div>
+          <h3>Honeywell Trend Control Systems</h3>
+          <p>El MICA suministra datos de calidad del aire que permiten al BMS de Honeywell optimizar la ventilación y el confort en tiempo real.</p>
+        </a>
+        <a class="card" href="integraciones/niagara-tridium/niagara-tridium.html" data-name="Niagara (Tridium)" data-cats="BMS,SAAS,Control HVAC / BMS">
+          <div class="tags"><span class="tag bms">BMS</span><span class="tag saas">SAAS</span></div>
+          <div class="icon"><img src="miniaturas homePage/niagara-tridium.png" alt="Niagara (Tridium)" loading="lazy"></div>
+          <h3>Niagara (Tridium)</h3>
+          <p>La integración con el BMS de Niagara visualiza los datos de InBiot y genera automatizaciones y alarmas.</p>
+        </a>
+        <a class="card" href="integraciones/schneider-electric-ecostruxure/schneider-electric-ecostruxure.html" data-name="Schneider Electric EcoStruxure" data-cats="BMS,Control HVAC / BMS">
+          <span class="tag bms">BMS</span>
+          <div class="icon"><img src="miniaturas homePage/schneider-electric-ecostruxure.png" alt="Schneider Electric EcoStruxure" loading="lazy"></div>
+          <h3>Schneider Electric EcoStruxure</h3>
+          <p>La calidad del aire entra en el ecosistema de Schneider Electric y en entornos KNX para equilibrar eficiencia y confort.</p>
+        </a>
+        <a class="card" href="integraciones/johnson-controls-metasys/johnson-controls-metasys.html" data-name="Johnson Controls Metasys" data-cats="BMS,SAAS,Control HVAC / BMS">
+          <div class="tags"><span class="tag bms">BMS</span><span class="tag saas">SAAS</span></div>
+          <div class="icon"><img src="miniaturas homePage/johnson-controls-metasys.png" alt="Johnson Controls Metasys" loading="lazy"></div>
+          <h3>Johnson Controls Metasys</h3>
+          <p>La monitorización continua de la calidad del aire permite a Metasys ajustar la ventilación de forma dinámica.</p>
+        </a>
+        <a class="card" href="integraciones/siemens-desigo/siemens-desigo.html" data-name="Siemens Desigo" data-cats="BMS,SAAS,Control HVAC / BMS">
+          <div class="tags"><span class="tag bms">BMS</span><span class="tag saas">SAAS</span></div>
+          <div class="icon"><img src="miniaturas homePage/siemens-desigo.png" alt="Siemens Desigo" loading="lazy"></div>
+          <h3>Siemens Desigo</h3>
+          <p>Desigo usa los datos de calidad del aire para un control más preciso del clima interior.</p>
+        </a>
+        <a class="card" href="integraciones/loxone-miniserver/loxone-miniserver.html" data-name="Miniserver Loxone" data-cats="BMS,Control HVAC / BMS">
+          <span class="tag bms">BMS</span>
+          <div class="icon"><img src="miniaturas homePage/loxone-miniserver.png" alt="Miniserver Loxone" loading="lazy"></div>
+          <h3>Miniserver Loxone</h3>
+          <p>La calidad del aire medida por el MICA activa automáticamente ventilación y climatización en Loxone.</p>
+        </a>
+        <a class="card" href="integraciones/onna/onna.html" data-name="ONNA" data-cats="BMS,Control HVAC / BMS">
+          <span class="tag bms">BMS</span>
+          <div class="icon"><img src="miniaturas homePage/onna.png" alt="ONNA" loading="lazy"></div>
+          <h3>ONNA</h3>
+          <p>ONNA automatiza el confort del espacio a partir de los datos de calidad del aire.</p>
+        </a>
+        <a class="card" href="integraciones/sauter-systems/sauter-systems.html" data-name="Sauter Systems" data-cats="BMS,Control HVAC / BMS">
+          <span class="tag bms">BMS</span>
+          <div class="icon"><img src="miniaturas homePage/sauter-systems.png" alt="Sauter Systems" loading="lazy"></div>
+          <h3>Sauter Systems</h3>
+          <p>La monitorización IAQ ayuda a Sauter a optimizar el rendimiento HVAC según el aire real.</p>
+        </a>
+        <a class="card" href="integraciones/wattsense/wattsense.html" data-name="Wattsense" data-cats="BMS,SAAS,Conectividad IoT">
+          <div class="tags"><span class="tag bms">BMS</span><span class="tag saas">SAAS</span></div>
+          <div class="icon"><img src="miniaturas homePage/wattsense.png" alt="Wattsense" loading="lazy"></div>
+          <h3>Wattsense</h3>
+          <p>La pasarela universal de Wattsense conecta los sensores InBiot con cualquier BMS del edificio.</p>
+        </a>
+        <a class="card" href="integraciones/infraspeak/infraspeak.html" data-name="Infraspeak" data-cats="SAAS,Facility Management">
+          <span class="tag saas">SAAS</span>
+          <div class="icon"><img src="miniaturas homePage/infraspeak.png" alt="Infraspeak" loading="lazy"></div>
+          <h3>Infraspeak</h3>
+          <p>Los datos de calidad del aire activan en Infraspeak órdenes de trabajo y mantenimiento preventivo.</p>
+        </a>
+        <a class="card" href="integraciones/indoorcare/indoorcare.html" data-name="indoorcare" data-cats="SAAS,Bienestar y certificación">
+          <span class="tag saas">SAAS</span>
+          <div class="icon"><img src="miniaturas homePage/indoorcare.svg" alt="indoorcare" loading="lazy"></div>
+          <h3>indoorcare</h3>
+          <p>Indoorcare usa la monitorización IAQ para visualizar la calidad del aire y generar alertas.</p>
+        </a>
+        <a class="card" href="integraciones/flythings/flythings.html" data-name="flythings" data-cats="SAAS,Conectividad IoT">
+          <span class="tag saas">SAAS</span>
+          <div class="icon"><img src="miniaturas homePage/flythings.png" alt="flythings" loading="lazy"></div>
+          <h3>flythings</h3>
+          <p>Los datos de InBiot llegan a Flythings para construir cuadros de mando y analítica avanzada.</p>
+        </a>
+        <a class="card" href="integraciones/foot-analytics/foot-analytics.html" data-name="Foot Analytics" data-cats="SAAS,Analítica de espacios">
+          <span class="tag saas">SAAS</span>
+          <div class="icon"><img src="miniaturas homePage/foot-analytics.png" alt="Foot Analytics" loading="lazy"></div>
+          <h3>Foot Analytics</h3>
+          <p>La calidad del aire del MICA se cruza con los datos de afluencia de Foot Analytics para optimizar espacios.</p>
+        </a>
+        <a class="card" href="integraciones/the-things-industries/the-things-industries.html" data-name="The Things Industries" data-cats="SAAS,Conectividad IoT">
+          <span class="tag saas">SAAS</span>
+          <div class="icon"><img src="miniaturas homePage/the-things-industries.png" alt="The Things Industries" loading="lazy"></div>
+          <h3>The Things Industries</h3>
+          <p>La red LoRaWAN de The Things Industries transporta los datos de calidad del aire de InBiot.</p>
+        </a>
+        <a class="card" href="integraciones/sensgreen/sensgreen.html" data-name="Sensgreen" data-cats="SAAS,Gestión energética,Analítica de espacios">
+          <span class="tag saas">SAAS</span>
+          <div class="icon"><img src="miniaturas homePage/sensgreen.png" alt="Sensgreen" loading="lazy"></div>
+          <h3>Sensgreen</h3>
+          <p>La monitorización IAQ ayuda a Sensgreen a reducir el impacto en salud y consumo energético.</p>
+        </a>
+        <a class="card" href="integraciones/akenza/akenza.html" data-name="Akenza.io" data-cats="SAAS,Facility Management,Analítica de espacios,Conectividad IoT">
+          <span class="tag saas">SAAS</span>
+          <div class="icon"><img src="miniaturas homePage/akenza.svg" alt="Akenza.io" loading="lazy"></div>
+          <h3>Akenza.io</h3>
+          <p>Akenza integra los sensores InBiot para crear reglas, alertas y aplicaciones a medida.</p>
+        </a>
+        <a class="card" href="integraciones/alfred-smart/alfred-smart.html" data-name="Alfred Smart" data-cats="SAAS,Bienestar y certificación">
+          <span class="tag saas">SAAS</span>
+          <div class="icon"><img src="miniaturas homePage/alfred-smart.png" alt="Alfred Smart" loading="lazy"></div>
+          <h3>Alfred Smart</h3>
+          <p>Los datos de calidad del aire del MICA permiten a Alfred Smart automatizar el confort del hogar.</p>
+        </a>
+        <a class="card" href="integraciones/healthy-workplace/healthy-workplace.html" data-name="Healthy Workplace" data-cats="SAAS,Bienestar y certificación">
+          <span class="tag saas">SAAS</span>
+          <div class="icon"><img src="miniaturas homePage/healthy-workplace.png" alt="Healthy Workplace" loading="lazy"></div>
+          <h3>Healthy Workplace</h3>
+          <p>La monitorización continua aporta la evidencia de calidad del aire para la certificación Healthy Workplace.</p>
+        </a>
+        <a class="card" href="integraciones/kiona/kiona.html" data-name="Kiona" data-cats="SAAS,Gestión energética">
+          <span class="tag saas">SAAS</span>
+          <div class="icon"><img src="miniaturas homePage/kiona.png" alt="Kiona" loading="lazy"></div>
+          <h3>Kiona</h3>
+          <p>Kiona combina los datos de calidad del aire con la gestión energética del edificio.</p>
+        </a>
+        <a class="card" href="integraciones/ecomt-otea/ecomt-otea.html" data-name="ECOMT (otea platform)" data-cats="SAAS,Gestión energética">
+          <span class="tag saas">SAAS</span>
+          <div class="icon"><img src="miniaturas homePage/ecomt-otea.png" alt="ECOMT (otea platform)" loading="lazy"></div>
+          <h3>ECOMT (otea platform)</h3>
+          <p>Los datos de calidad del aire del MICA enriquecen el análisis energético de otea (ECOMT).</p>
+        </a>
+        <a class="card" href="integraciones/ennerio/ennerio.html" data-name="ennerio" data-cats="SAAS,Gestión energética">
+          <span class="tag saas">SAAS</span>
+          <div class="icon"><img src="miniaturas homePage/ennerio.png" alt="ennerio" loading="lazy"></div>
+          <h3>ennerio</h3>
+          <p>La monitorización IAQ ayuda a ennerio a equilibrar eficiencia y bienestar.</p>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  (function(){
+    var searchInput = document.getElementById('searchInput');
+    var chipsBox = document.getElementById('chips');
+    var grid = document.getElementById('grid');
+    var cards = Array.prototype.slice.call(grid.querySelectorAll('.card'));
+    var activeCat = 'all';
+
+    var empty = document.createElement('div');
+    empty.className = 'no-results';
+    empty.textContent = 'No hay integraciones que coincidan con tu búsqueda.';
+    empty.style.display = 'none';
+    grid.appendChild(empty);
+
+    function applyFilters(){
+      var q = searchInput.value.trim().toLowerCase();
+      var visible = 0;
+
+      cards.forEach(function(card){
+        var name = (card.getAttribute('data-name') || '').toLowerCase();
+        var desc = (card.querySelector('p').textContent || '').toLowerCase();
+        var cats = (card.getAttribute('data-cats') || '').split(',').map(function(c){ return c.trim(); });
+
+        var matchesText = !q || name.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
+        var matchesCat = activeCat === 'all' || cats.indexOf(activeCat) !== -1;
+
+        var show = matchesText && matchesCat;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+
+      empty.style.display = visible === 0 ? '' : 'none';
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+
+    chipsBox.addEventListener('click', function(e){
+      var chip = e.target.closest('.chip');
+      if (!chip) return;
+      activeCat = chip.getAttribute('data-cat');
+      chipsBox.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+      chip.classList.add('active');
+      applyFilters();
+    });
+  })();
+
+  (function(){
+    var track = document.getElementById('ctrack');
+    if (!track) return;
+    var carousel = track.closest('.carousel');
+    var dots = Array.prototype.slice.call(carousel.querySelectorAll('.cdot'));
+    var n = dots.length, i = 0, timer = null;
+
+    function go(k){
+      i = (k + n) % n;
+      track.style.transform = 'translateX(-' + (i * 100) + '%)';
+      dots.forEach(function(d, x){ d.classList.toggle('active', x === i); });
+    }
+    function next(){ go(i + 1); }
+    function start(){ stop(); timer = setInterval(next, 5000); }
+    function stop(){ if (timer) clearInterval(timer); }
+
+    dots.forEach(function(d, x){
+      d.addEventListener('click', function(){ go(x); start(); });
+    });
+    carousel.addEventListener('mouseenter', stop);
+    carousel.addEventListener('mouseleave', start);
+    start();
+  })();
+</script>
+</body>
+</html>
