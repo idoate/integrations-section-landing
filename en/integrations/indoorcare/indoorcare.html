@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indoorcare — InBiot Integration</title>
+<style>
+  :root {
+    --text-dark: #16181d;
+    --text-muted: #6b7280;
+    --text-label: #8b8f97;
+    --text-pending: #b45309;
+    --border-light: #e5e7eb;
+    --placeholder-bg: #d9d9de;
+    --btn-bg: #1f2126;
+    --btn-text: #ffffff;
+    --spec-bg-from: #fbfbfc;
+    --spec-bg-to: #f1f1f3;
+    --pending-bg: #fff8ec;
+    --pending-border: #f2dfb8;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-dark);
+    background: #ffffff;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 24px 96px 24px;
+  }
+
+  /* ============ BREADCRUMB ============ */
+  .breadcrumb {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+  .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb .sep { margin: 0 6px; }
+  .breadcrumb .current { color: var(--text-dark); font-weight: 600; }
+
+  /* ============ LAYOUT 2 COLUMNAS (hero izq. / specs der.) ============ */
+  .page-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: start;
+    margin-bottom: 56px;
+  }
+
+  @media (max-width: 780px) {
+    .page-layout { grid-template-columns: 1fr; gap: 32px; }
+  }
+
+  /* ============ COLUMNA IZQUIERDA: título, texto, imagen, CTA ============ */
+  .ficha-hero h1 {
+    font-size: 32px;
+    line-height: 1.15;
+    font-weight: 800;
+    margin: 0 0 16px 0;
+  }
+
+  .ficha-hero .description {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0 0 24px 0;
+  }
+
+  .hero-image {
+    width: 100%;
+    aspect-ratio: 1 / 0.72;
+    background: #ffffff;
+    border: 2px solid var(--border-light);
+    border-radius: 12px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+  }
+
+  .hero-image-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .hero-image .placeholder-note {
+    font-size: 13px;
+    color: #8a8d93;
+    text-align: center;
+    padding: 0 16px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .btn-primary:hover { background: #34363c; }
+
+  /* ============ COLUMNA DERECHA: specs apiladas ============ */
+  .spec-list {
+    background: linear-gradient(160deg, var(--spec-bg-from), var(--spec-bg-to));
+    border-radius: 20px;
+    padding: 8px 28px;
+    height: 100%;
+  }
+
+  .spec-row {
+    padding: 22px 0;
+  }
+
+  .spec-row + .spec-row {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .spec-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-label);
+    margin-bottom: 8px;
+  }
+
+  .spec-value {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-dark);
+  }
+
+  .spec-value p { margin: 0 0 6px 0; }
+  .spec-value p:last-child { margin-bottom: 0; }
+
+  .spec-value .value-name {
+    font-weight: 700;
+    margin: 0 0 4px 0;
+  }
+
+  .spec-value .value-name.is-pending {
+    color: var(--text-pending);
+    font-weight: 600;
+  }
+
+  .spec-value .value-sub {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .spec-value .value-sub.is-pending {
+    color: var(--text-pending);
+    font-style: italic;
+  }
+
+  .spec-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-dark);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .spec-link:hover { text-decoration: underline; }
+  .spec-link svg { flex: 0 0 auto; }
+
+  /* ============ RECURSOS RELACIONADOS ============ */
+  .ficha-resources h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 18px 0;
+  }
+
+  .resources-empty {
+    border: 1px dashed var(--pending-border);
+    background: var(--pending-bg);
+    border-radius: 12px;
+    padding: 20px;
+    font-size: 14px;
+    color: var(--text-pending);
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="../../integrations.html">All integrations</a>
+      <span class="sep">&gt;</span>
+      <span class="current">Indoorcare</span>
+    </div>
+
+    <div class="page-layout">
+
+      <!-- Izquierda: título, texto, imagen, CTA -->
+      <div class="ficha-hero">
+        <h1>Indoorcare</h1>
+        <p class="description">Indoorcare is a cloud platform focused on the health and comfort of indoor spaces. MICA's air quality monitoring is the foundation for visualizing conditions, generating alerts, and improving the environment.</p>
+        <div class="hero-image">
+          <img src="../../../integraciones/indoorcare/logo.png" alt="Indoorcare" class="hero-image-img"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <span class="placeholder-note" style="display:none;">Logo pending — place it as logo.png in this folder</span>
+        </div>
+        <a href="#" class="btn-primary">How to integrate it</a>
+      </div>
+
+      <!-- Derecha: specs apiladas -->
+      <div class="spec-list">
+
+        <div class="spec-row">
+          <div class="spec-label">Connectivity</div>
+          <div class="spec-value">API</div>
+        </div>
+
+        <div class="spec-row">
+          <div class="spec-label">Integration</div>
+          <div class="spec-value">
+            <p>Indoorcare receives the MICA's air quality data via API and translates it into a dashboard designed so that anyone, with no technical knowledge, can understand their space's air quality at a glance. Once that data reaches Indoorcare's cloud, its AI engine generates recommendations: concrete, actionable guidance to improve occupant wellbeing, delivered both in the dashboard itself and by email.</p>
+          </div>
+        </div>
+
+        <div class="spec-row">
+          <div class="spec-label">Company</div>
+          <div class="spec-value">
+            <p class="value-name">Indoorcare</p>
+            <p class="value-sub">Indoorcare is a workplace wellness software platform that interprets complex indoor air quality data to improve occupant wellbeing. It is brand-agnostic (compatible with IAQ hardware from different manufacturers) and generates reports and actionable recommendations through AI.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>

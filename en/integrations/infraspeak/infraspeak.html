@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infraspeak — InBiot Integration</title>
+<style>
+  :root {
+    --text-dark: #16181d;
+    --text-muted: #6b7280;
+    --text-label: #8b8f97;
+    --text-pending: #b45309;
+    --border-light: #e5e7eb;
+    --placeholder-bg: #d9d9de;
+    --btn-bg: #1f2126;
+    --btn-text: #ffffff;
+    --spec-bg-from: #fbfbfc;
+    --spec-bg-to: #f1f1f3;
+    --pending-bg: #fff8ec;
+    --pending-border: #f2dfb8;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-dark);
+    background: #ffffff;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 24px 96px 24px;
+  }
+
+  /* ============ BREADCRUMB ============ */
+  .breadcrumb {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+  .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb .sep { margin: 0 6px; }
+  .breadcrumb .current { color: var(--text-dark); font-weight: 600; }
+
+  /* ============ LAYOUT 2 COLUMNAS (hero izq. / specs der.) ============ */
+  .page-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: start;
+    margin-bottom: 56px;
+  }
+
+  @media (max-width: 780px) {
+    .page-layout { grid-template-columns: 1fr; gap: 32px; }
+  }
+
+  /* ============ COLUMNA IZQUIERDA: título, texto, imagen, CTA ============ */
+  .ficha-hero h1 {
+    font-size: 32px;
+    line-height: 1.15;
+    font-weight: 800;
+    margin: 0 0 16px 0;
+  }
+
+  .ficha-hero .description {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0 0 24px 0;
+  }
+
+  .hero-image {
+    width: 100%;
+    aspect-ratio: 1 / 0.72;
+    background: #ffffff;
+    border: 2px solid var(--border-light);
+    border-radius: 12px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+  }
+
+  .hero-image-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .hero-image .placeholder-note {
+    font-size: 13px;
+    color: #8a8d93;
+    text-align: center;
+    padding: 0 16px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .btn-primary:hover { background: #34363c; }
+
+  /* ============ COLUMNA DERECHA: specs apiladas ============ */
+  .spec-list {
+    background: linear-gradient(160deg, var(--spec-bg-from), var(--spec-bg-to));
+    border-radius: 20px;
+    padding: 8px 28px;
+    height: 100%;
+  }
+
+  .spec-row {
+    padding: 22px 0;
+  }
+
+  .spec-row + .spec-row {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .spec-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-label);
+    margin-bottom: 8px;
+  }
+
+  .spec-value {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-dark);
+  }
+
+  .spec-value p { margin: 0 0 6px 0; }
+  .spec-value p:last-child { margin-bottom: 0; }
+
+  .spec-value .value-name {
+    font-weight: 700;
+    margin: 0 0 4px 0;
+  }
+
+  .spec-value .value-name.is-pending {
+    color: var(--text-pending);
+    font-weight: 600;
+  }
+
+  .spec-value .value-sub {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .spec-value .value-sub.is-pending {
+    color: var(--text-pending);
+    font-style: italic;
+  }
+
+  .spec-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-dark);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .spec-link:hover { text-decoration: underline; }
+  .spec-link svg { flex: 0 0 auto; }
+
+  /* ============ RECURSOS RELACIONADOS ============ */
+  .ficha-resources h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 18px 0;
+  }
+
+  .resources-empty {
+    border: 1px dashed var(--pending-border);
+    background: var(--pending-bg);
+    border-radius: 12px;
+    padding: 20px;
+    font-size: 14px;
+    color: var(--text-pending);
+  }
+
+  .resources-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  @media (max-width: 780px) {
+    .resources-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 480px) {
+    .resources-grid { grid-template-columns: 1fr; }
+  }
+
+  .resource-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.15s ease;
+  }
+  .resource-card:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  }
+
+  .resource-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--placeholder-bg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .resource-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .resource-thumb--white {
+    background: #ffffff;
+  }
+
+  .resource-thumb-img--contain {
+    object-fit: contain;
+    padding: 14px;
+  }
+
+  .resource-source {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .resource-info {
+    padding: 14px 16px 16px 16px;
+  }
+
+  .resource-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 4px 0;
+  }
+
+  .resource-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .resources-note {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .resource-card--pending {
+    border-style: dashed;
+    border-color: var(--pending-border);
+    cursor: default;
+  }
+  .resource-card--pending:hover {
+    box-shadow: none;
+  }
+
+  .resource-thumb--pending {
+    background: var(--pending-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pending-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-pending);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .resource-card--pending .resource-title,
+  .resource-card--pending .resource-meta {
+    color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="../../integrations.html">All integrations</a>
+      <span class="sep">&gt;</span>
+      <span class="current">Infraspeak</span>
+    </div>
+
+    <div class="page-layout">
+
+      <!-- Izquierda: título, texto, imagen, CTA -->
+      <div class="ficha-hero">
+        <h1>Infraspeak</h1>
+        <p class="description">Infraspeak is an intelligent maintenance and facilities management platform (IMMP). MICA's air quality data makes it possible to trigger work orders and preventive maintenance based on real conditions.</p>
+        <div class="hero-image">
+          <img src="../../../integraciones/infraspeak/logo.png" alt="Infraspeak" class="hero-image-img"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <span class="placeholder-note" style="display:none;">Logo pending — place it as logo.png in this folder</span>
+        </div>
+        <a href="#" class="btn-primary">How to integrate it</a>
+      </div>
+
+      <!-- Derecha: specs apiladas -->
+      <div class="spec-list">
+
+        <div class="spec-row">
+          <div class="spec-label">Connectivity</div>
+          <div class="spec-value">API</div>
+        </div>
+
+        <div class="spec-row">
+          <div class="spec-label">Integration</div>
+          <div class="spec-value">
+            <p>One way to view air quality data on the Infraspeak platform is through the API: that's how the MICA's values arrive to generate work orders and trigger preventive maintenance based on the space's real conditions. That same flexibility makes it possible to organize maintenance tasks and manage assets with artificial intelligence; its integration ecosystem also supports other protocols such as Modbus, BACnet, or LoRaWAN.</p>
+          </div>
+        </div>
+
+        <div class="spec-row">
+          <div class="spec-label">Company</div>
+          <div class="spec-value">
+            <p class="value-name">Infraspeak</p>
+            <p class="value-sub">Infraspeak is a Portuguese intelligent maintenance management platform (CMMS/IMMP) that centralizes work orders, preventive maintenance, assets, stock, and KPIs, integrating with more than 100 systems (ERPs, IoT sensors, NFC, helpdesk). Recognized by Verdantix as a leader in CMMS for commercial buildings.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Related resources -->
+    <div class="ficha-resources">
+      <h2>Related resources</h2>
+      <div class="resources-grid">
+
+        <a href="https://www.linkedin.com/posts/ifm26-ifmsummitmadrid-breaktheloop-ugcPost-7459519914836492288-j2pF/" target="_blank" class="resource-card">
+          <div class="resource-thumb">
+            <img src="../../../integraciones/infraspeak/linkedin-ifm-summit-madrid-2026.jpg" alt="inBiot at the IFM Summit Madrid 2026 booth, an event organized by Infraspeak" class="resource-thumb-img" style="object-position: 50% 30%;">
+            <span class="resource-source">LinkedIn</span>
+          </div>
+          <div class="resource-info">
+            <p class="resource-title">inBiot at IFM Summit Madrid 2026</p>
+            <p class="resource-meta">Video from inBiot's booth at the facility management event organized by Infraspeak · inBiot Monitoring</p>
+          </div>
+        </a>
+
+        <div class="resource-card resource-card--pending">
+          <div class="resource-thumb resource-thumb--pending">
+            <span class="pending-label">Coming soon</span>
+          </div>
+          <div class="resource-info">
+            <p class="resource-title">Article about the integration</p>
+            <p class="resource-meta">Publication in progress</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
