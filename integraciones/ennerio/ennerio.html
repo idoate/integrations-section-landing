@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ennerio — Integración InBiot</title>
+<title>Ennerio — Integración InBiot</title>
 <style>
   :root {
     --text-dark: #16181d;
@@ -84,13 +84,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 28px;
+    padding: 0;
+    overflow: hidden;
   }
 
   .hero-image-img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .hero-image .placeholder-note {
@@ -197,6 +198,88 @@
     font-size: 14px;
     color: var(--text-pending);
   }
+
+  .resources-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  @media (max-width: 780px) {
+    .resources-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 480px) {
+    .resources-grid { grid-template-columns: 1fr; }
+  }
+
+  .resource-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.15s ease;
+  }
+  .resource-card:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  }
+
+  .resource-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--placeholder-bg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .resource-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .resource-thumb--white {
+    background: #ffffff;
+  }
+
+  .resource-thumb-img--contain {
+    object-fit: contain;
+    padding: 14px;
+  }
+
+  .resource-source {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .resource-info {
+    padding: 14px 16px 16px 16px;
+  }
+
+  .resource-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 4px 0;
+  }
+
+  .resource-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+  }
 </style>
 <style>
   .lang-switch{
@@ -252,17 +335,17 @@
     <div class="breadcrumb">
       <a href="../../PAGINA GENERAL INTEGRACIONES.html">Todas las integraciones</a>
       <span class="sep">&gt;</span>
-      <span class="current">ennerio</span>
+      <span class="current">Ennerio</span>
     </div>
 
     <div class="page-layout">
 
       <!-- Izquierda: título, texto, imagen, CTA -->
       <div class="ficha-hero">
-        <h1>ennerio</h1>
-        <p class="description">ennerio es la plataforma de gestión energética y monitorización de edificios de Energus. Integrar los datos de calidad del aire del MICA permite equilibrar la eficiencia energética con el bienestar de los ocupantes.</p>
+        <h1>Ennerio</h1>
+        <p class="description">ENNERIO es una plataforma SaaS en la nube que conecta sistemas de automatización de edificios y fuentes de datos en un único ecosistema inteligente y adaptativo. La plataforma ofrece monitorización en tiempo real, optimización energética, control remoto del sistema, mantenimiento predictivo y reporting ESG, permitiendo a facility managers, propietarios de edificios y asset managers mejorar el rendimiento del edificio y la eficiencia operativa. Estos datos ayudan al propietario del edificio a tomar decisiones sobre la modernización de los sistemas de ingeniería, en particular los equipos HVAC. Los datos de los dispositivos «Mica» pueden usarse dentro del sistema «Ennerio» para controlar los algoritmos de operación del HVAC y ajustar la configuración automáticamente.</p>
         <div class="hero-image">
-          <img src="logo.png" alt="ennerio" class="hero-image-img"
+          <img src="logo.png" alt="Ennerio" class="hero-image-img"
                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
           <span class="placeholder-note" style="display:none;">Logo pendiente — colocar como logo.png en esta carpeta</span>
         </div>
@@ -274,27 +357,45 @@
 
         <div class="spec-row">
           <div class="spec-label">Conectividad</div>
-          <div class="spec-value"><span style="color:#b45309;font-style:italic;">[PENDIENTE]</span></div>
+          <div class="spec-value">MQTT, Modbus, Bacnet, API</div>
         </div>
 
         <div class="spec-row">
           <div class="spec-label">Integración</div>
           <div class="spec-value">
-            <p class="value-name is-pending">[PENDIENTE]</p>
-            <p class="value-sub is-pending">[Especificaciones del dispositivo/versión concreta pendientes]</p>
+            <p>Mediante un túnel IPSec, recogemos los datos del dispositivo de forma segura a través de la red. Usando MQTT, con mensajes de baja latencia y poco peso, conseguimos lecturas rápidas y precisas para el análisis de datos y el control de dispositivos. Ennerio recoge los datos vía MQTT, Modbus, Bacnet y API, unificando toda la información y el control en una sola plataforma. Los datos de calidad del aire pueden disparar directamente el BMS o dispositivos independientes para realizar modificaciones inmediatas en el sistema.</p>
           </div>
         </div>
 
         <div class="spec-row">
           <div class="spec-label">Empresa</div>
           <div class="spec-value">
-            <p class="value-name is-pending">[PENDIENTE]</p>
-            <p class="value-sub is-pending">[Identidad corporativa y descripción de la empresa pendientes de confirmar con el cliente]</p>
+            <p class="value-name">ENNERIO</p>
+            <p class="value-sub">ENNERIO es una empresa tecnológica lituana que desarrolla soluciones de software inteligente para la gestión energética y de edificios inteligentes. Con más de 15 años de experiencia en ingeniería de edificios, la empresa ayuda a facility managers, propietarios de edificios y asset managers a mejorar la eficiencia energética, el rendimiento del sistema y los resultados de sostenibilidad mediante optimización basada en datos y control centralizado. ENNERIO reporta hasta un 15% de ahorro energético anual gracias a la optimización continua, y da servicio a organizaciones de carteras inmobiliarias comerciales y del sector público.</p>
           </div>
         </div>
 
       </div>
 
+    </div>
+
+    <!-- Recursos relacionados -->
+    <div class="ficha-resources">
+      <h2>Recursos relacionados</h2>
+      <div class="resources-grid">
+
+        <a href="https://www.linkedin.com/posts/%F0%9D%97%A1%F0%9D%97%B2%F0%9D%98%84-%F0%9D%97%A7%F0%9D%97%B2%F0%9D%97%B0%F0%9D%97%B5%F0%9D%97%BB%F0%9D%97%B6%F0%9D%97%B0%F0%9D%97%AE%F0%9D%97%B9-%F0%9D%97%96%F0%9D%97%BC%F0%9D%97%B9%F0%9D%97%B9%F0%9D%97%AE%F0%9D%97%AF%F0%9D%97%BC%F0%9D%97%BF%F0%9D%97%AE%F0%9D%98%81%F0%9D%97%B6%F0%9D%97%BC%F0%9D%97%BB-share-7468221824137375744-GLHU/" target="_blank" class="resource-card">
+          <div class="resource-thumb resource-thumb--white">
+            <img src="linkedin-new-collaboration-post.png" alt="New Technical Collaboration: inBiot x Ennerio" class="resource-thumb-img resource-thumb-img--contain">
+            <span class="resource-source">LinkedIn</span>
+          </div>
+          <div class="resource-info">
+            <p class="resource-title">New Technical Collaboration: inBiot x Ennerio</p>
+            <p class="resource-meta">Anuncio de la colaboración técnica entre inBiot y Ennerio · linkedin.com</p>
+          </div>
+        </a>
+
+      </div>
     </div>
 
   </div>

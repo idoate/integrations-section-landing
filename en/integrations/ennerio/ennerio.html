@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ennerio — InBiot Integration</title>
+<title>Ennerio — InBiot Integration</title>
 <style>
   :root {
     --text-dark: #16181d;
@@ -84,13 +84,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 28px;
+    padding: 0;
+    overflow: hidden;
   }
 
   .hero-image-img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .hero-image .placeholder-note {
@@ -197,6 +198,88 @@
     font-size: 14px;
     color: var(--text-pending);
   }
+
+  .resources-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  @media (max-width: 780px) {
+    .resources-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 480px) {
+    .resources-grid { grid-template-columns: 1fr; }
+  }
+
+  .resource-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.15s ease;
+  }
+  .resource-card:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  }
+
+  .resource-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--placeholder-bg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .resource-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .resource-thumb--white {
+    background: #ffffff;
+  }
+
+  .resource-thumb-img--contain {
+    object-fit: contain;
+    padding: 14px;
+  }
+
+  .resource-source {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .resource-info {
+    padding: 14px 16px 16px 16px;
+  }
+
+  .resource-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 4px 0;
+  }
+
+  .resource-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+  }
 </style>
 <style>
   .lang-switch{
@@ -252,15 +335,15 @@
     <div class="breadcrumb">
       <a href="../../integrations.html">All integrations</a>
       <span class="sep">&gt;</span>
-      <span class="current">ennerio</span>
+      <span class="current">Ennerio</span>
     </div>
 
     <div class="page-layout">
 
       <!-- Izquierda: título, texto, imagen, CTA -->
       <div class="ficha-hero">
-        <h1>ennerio</h1>
-        <p class="description">ennerio is Energus's energy management and building monitoring platform. Integrating MICA's air quality data makes it possible to balance energy efficiency with occupant wellbeing.</p>
+        <h1>Ennerio</h1>
+        <p class="description">ENNERIO is a cloud-based SaaS platform that connects building automation systems and data sources into one intelligent, adaptive ecosystem. The platform provides real-time monitoring, energy optimization, remote system control, predictive maintenance, and ESG reporting, enabling facility managers, building owners, and asset managers to improve building performance and operational efficiency. This data helps the building owner make decisions regarding the modernization of engineering systems, particularly HVAC equipment. Data from "Mica" devices can be used within the "Ennerio" system to control HVAC operation algorithms and automatically adjust settings.</p>
         <div class="hero-image">
           <img src="../../../integraciones/ennerio/logo.png" alt="ennerio" class="hero-image-img"
                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -274,27 +357,45 @@
 
         <div class="spec-row">
           <div class="spec-label">Connectivity</div>
-          <div class="spec-value"><span style="color:#b45309;font-style:italic;">[PENDING]</span></div>
+          <div class="spec-value">MQTT, Modbus, Bacnet, API</div>
         </div>
 
         <div class="spec-row">
           <div class="spec-label">Integration</div>
           <div class="spec-value">
-            <p class="value-name is-pending">[PENDING]</p>
-            <p class="value-sub is-pending">[Device/version specifics pending]</p>
+            <p>By having an IPSec tunnel, we can securely collect data from the device across the network. While using an MQTT with low latency and small data messages, we can achieve fast and accurate readings for data analytics and device control. Ennerio gathers the data via MQTT, Modbus, Bacnet and API protocols, unifying all the information and control to one single platform. Air quality data can directly trigger BMS or independent devices for immediate modifications to the system.</p>
           </div>
         </div>
 
         <div class="spec-row">
           <div class="spec-label">Company</div>
           <div class="spec-value">
-            <p class="value-name is-pending">[PENDING]</p>
-            <p class="value-sub is-pending">[Corporate identity and company description pending confirmation from the client]</p>
+            <p class="value-name">ENNERIO</p>
+            <p class="value-sub">ENNERIO is a Lithuanian technology company that develops intelligent software solutions for smart building and energy management. With more than 15 years of building engineering experience, the company helps facility managers, building owners, and asset managers improve energy efficiency, system performance and sustainability outcomes through data-driven optimization and centralized control. ENNERIO reports up to 15% annual energy savings through continuous optimization and serves organizations across commercial and public-sector real estate portfolios.</p>
           </div>
         </div>
 
       </div>
 
+    </div>
+
+    <!-- Recursos relacionados -->
+    <div class="ficha-resources">
+      <h2>Related resources</h2>
+      <div class="resources-grid">
+
+        <a href="https://www.linkedin.com/posts/%F0%9D%97%A1%F0%9D%97%B2%F0%9D%98%84-%F0%9D%97%A7%F0%9D%97%B2%F0%9D%97%B0%F0%9D%97%B5%F0%9D%97%BB%F0%9D%97%B6%F0%9D%97%B0%F0%9D%97%AE%F0%9D%97%B9-%F0%9D%97%96%F0%9D%97%BC%F0%9D%97%B9%F0%9D%97%B9%F0%9D%97%AE%F0%9D%97%AF%F0%9D%97%BC%F0%9D%97%BF%F0%9D%97%AE%F0%9D%98%81%F0%9D%97%B6%F0%9D%97%BC%F0%9D%97%BB-share-7468221824137375744-GLHU/" target="_blank" class="resource-card">
+          <div class="resource-thumb resource-thumb--white">
+            <img src="../../../integraciones/ennerio/linkedin-new-collaboration-post.png" alt="New Technical Collaboration: inBiot x Ennerio" class="resource-thumb-img resource-thumb-img--contain">
+            <span class="resource-source">LinkedIn</span>
+          </div>
+          <div class="resource-info">
+            <p class="resource-title">New Technical Collaboration: inBiot x Ennerio</p>
+            <p class="resource-meta">Announcing the technical collaboration between inBiot and Ennerio · linkedin.com</p>
+          </div>
+        </a>
+
+      </div>
     </div>
 
   </div>
