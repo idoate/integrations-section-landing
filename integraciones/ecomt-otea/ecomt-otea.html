@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ECOMT (otea platform) — Integración InBiot</title>
+<title>ECOMT OTEA platform — Integración InBiot</title>
 <style>
   :root {
     --text-dark: #16181d;
@@ -67,6 +67,8 @@
     margin: 0 0 16px 0;
   }
 
+  .ficha-hero h1 .h1-sub { font-size: 0.5em; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+
   .ficha-hero .description {
     font-size: 15px;
     line-height: 1.6;
@@ -84,13 +86,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 28px;
+    padding: 0;
+    overflow: hidden;
   }
 
   .hero-image-img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .hero-image .placeholder-note {
@@ -197,6 +200,93 @@
     font-size: 14px;
     color: var(--text-pending);
   }
+
+  .ficha-hero .description p { margin: 0 0 12px 0; }
+  .ficha-hero .description p:last-child { margin-bottom: 0; }
+  .spec-value ul { margin: 6px 0 0 0; padding-left: 20px; }
+  .spec-value li { margin: 0 0 4px 0; }
+  .spec-value .value-sub + .value-sub { margin-top: 10px; }
+  .resources-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  @media (max-width: 780px) {
+    .resources-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 480px) {
+    .resources-grid { grid-template-columns: 1fr; }
+  }
+
+  .resource-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.15s ease;
+  }
+  .resource-card:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  }
+
+  .resource-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--placeholder-bg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .resource-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .resource-thumb--white {
+    background: #ffffff;
+  }
+
+  .resource-thumb-img--contain {
+    object-fit: contain;
+    padding: 14px;
+  }
+
+  .resource-source {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .resource-info {
+    padding: 14px 16px 16px 16px;
+  }
+
+  .resource-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 4px 0;
+  }
+
+  .resource-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+  }
 </style>
 <style>
   .lang-switch{
@@ -252,17 +342,20 @@
     <div class="breadcrumb">
       <a href="../../PAGINA GENERAL INTEGRACIONES.html">Todas las integraciones</a>
       <span class="sep">&gt;</span>
-      <span class="current">ECOMT (otea platform)</span>
+      <span class="current">ECOMT OTEA platform</span>
     </div>
 
     <div class="page-layout">
 
       <!-- Izquierda: título, texto, imagen, CTA -->
       <div class="ficha-hero">
-        <h1>ECOMT (otea platform)</h1>
-        <p class="description">ECOMT es especialista en monitorización y gestión energética a través de su plataforma otea. Los datos de calidad del aire del MICA enriquecen el análisis y el control de las instalaciones.</p>
+        <h1>ECOMT <span class="h1-sub">OTEA platform</span></h1>
+        <div class="description">
+          <p>EcoMT se encarga de la gestión digital de instalaciones de principio a fin. Diseña y coloca en cada una un cuadro de control a medida que conecta climatización, iluminación, frío industrial, fotovoltaica y contadores de energía, agua o gas, e integra cualquier equipo, sea cual sea su marca o antigüedad.</p>
+          <p>Los cuadros se conectan a OTEA Software, su plataforma de gestión energética y operación remota, para monitorizar en tiempo real, controlar en remoto y automatizar con reglas, con menos consumo, detección temprana de averías y mejor confort. Un Centro de Control supervisa el día a día, elabora informes, prioriza las incidencias y aplica análisis con IA.</p>
+        </div>
         <div class="hero-image">
-          <img src="logo.png" alt="ECOMT (otea platform)" class="hero-image-img"
+          <img src="hero.jpg" alt="ECOMT OTEA platform" class="hero-image-img"
                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
           <span class="placeholder-note" style="display:none;">Logo pendiente — colocar como logo.png en esta carpeta</span>
         </div>
@@ -274,27 +367,63 @@
 
         <div class="spec-row">
           <div class="spec-label">Conectividad</div>
-          <div class="spec-value"><span style="color:#b45309;font-style:italic;">[PENDIENTE]</span></div>
+          <div class="spec-value">LoRaWAN, Modbus TCP, API, etc.</div>
         </div>
 
         <div class="spec-row">
           <div class="spec-label">Integración</div>
           <div class="spec-value">
-            <p class="value-name is-pending">[PENDIENTE]</p>
-            <p class="value-sub is-pending">[Especificaciones del dispositivo/versión concreta pendientes]</p>
+            <p>MICA envía sus medidas por LoRaWAN a un gateway. El PLC del cuadro de control de EcoMT lee esos datos del gateway por Modbus TCP y, a través de OTEA Edge, los envía a OTEA Software, que los almacena e historifica.</p>
+            <p>Una vez en OTEA, los datos de calidad del aire tienen varios usos.</p>
+            <ul>
+              <li>Consultar en tiempo real y en histórico, por instalación o por familias de instalaciones.</li>
+              <li>Usar para lanzar alertas por WhatsApp, SMS o email cuando una variable supera un umbral.</li>
+              <li>Combinar con reglas que actúan sobre la ventilación o la climatización.</li>
+              <li>Enviar a otras herramientas del cliente (ERP, GMAO, Power BI) mediante la API de OTEA.</li>
+            </ul>
           </div>
         </div>
 
         <div class="spec-row">
           <div class="spec-label">Empresa</div>
           <div class="spec-value">
-            <p class="value-name is-pending">[PENDIENTE]</p>
-            <p class="value-sub is-pending">[Descripción de la empresa pendiente de confirmar con el cliente]</p>
+            <p class="value-name">EcoMT</p>
+            <p class="value-sub">EcoMT es una ingeniería de control especializada en la gestión digital de instalaciones. Desde 2010 hace que las instalaciones de sus clientes den los datos necesarios, avisen cuando algo falla y consuman solo lo justo, todo con un único proveedor. Gestiona más de 10.000 instalaciones en 86 países para empresas como Inditex, Correos, Aldi, Lupa y Repsol.</p>
           </div>
         </div>
 
       </div>
 
+    </div>
+
+    <!-- Recursos relacionados -->
+    <div class="ficha-resources">
+      <h2>Recursos relacionados</h2>
+      <div class="resources-grid">
+
+        <a href="https://www.construible.es/2026/06/04/inbiot-ecomt-colaboran-integrar-datos-ambientales-plataformas-gestion-edificios" target="_blank" class="resource-card">
+          <div class="resource-thumb resource-thumb--white">
+            <img src="construible-logo.png" alt="inBiot y EcoMT colaboran para integrar datos ambientales en plataformas de gestión de edificios" class="resource-thumb-img resource-thumb-img--contain">
+            <span class="resource-source">Noticia</span>
+          </div>
+          <div class="resource-info">
+            <p class="resource-title">inBiot y EcoMT colaboran para integrar datos ambientales en plataformas de gestión de edificios</p>
+            <p class="resource-meta">Noticia sobre la colaboración tecnológica entre inBiot y EcoMT · construible.es</p>
+          </div>
+        </a>
+
+        <a href="https://www.inbiotair.com/es/wikinbiot/inbiot-ecomt-integracion-iaq-plataforma-otea" target="_blank" class="resource-card">
+          <div class="resource-thumb">
+            <img src="wikinbiot-ecomt-otea-post.jpg" alt="inBiot y EcoMT anuncian una colaboración tecnológica para la integración de calidad del aire interior en plataformas avanzadas de gestión de edificios" class="resource-thumb-img">
+            <span class="resource-source">Artículo</span>
+          </div>
+          <div class="resource-info">
+            <p class="resource-title">inBiot y EcoMT anuncian una colaboración tecnológica para la integración de calidad del aire interior en plataformas avanzadas de gestión de edificios</p>
+            <p class="resource-meta">Dos años de despliegues conjuntos e integración nativa con OTEA · wikinBiot</p>
+          </div>
+        </a>
+
+      </div>
     </div>
 
   </div>
